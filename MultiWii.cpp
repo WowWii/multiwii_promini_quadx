@@ -311,7 +311,9 @@ unsigned long ave_index = 0;
 unsigned int ave_div = 200;
 float ave_sum  = 0;
 
-ISR(TIMER2_COMPA_vect){//timer1 interrupt 8kHz toggles pin 9
+//ISR(TIMER1_COMPA_vect){//timer1 interrupt 8kHz toggles pin 9
+ISR(PCINT21_vect){
+  debug[1]++;
   if(digitalRead(5) == LOW)
   {     
   	if(!startTime) startTime = micros();
@@ -338,19 +340,19 @@ void setupTimers(void)
   cli();//stop interrupts
 
   //set timer2 interrupt at 8kHz // WT, it is actually 4kHz
-  TCCR2A = 0;// set entire TCCR2A register to 0
-  TCCR2B = 0;// same for TCCR2B
-  TCNT2  = 0;//initialize counter value to 0
+  TCCR1A = 0;// set entire TCCR2A register to 0
+  TCCR1B = 0;// same for TCCR2B
+  TCNT1  = 0;//initialize counter value to 0
   // set compare match register for 8khz increments
-  OCR2A = 24;//24(40kHz), 30(32kHz), 61(16kHz), 124(8kHz), 249(4kHz) = (16*10^6) / (8000*8) - 1 (must be <256) //WT, =(16*10^6)/(2*4000*8)-1
-  //OCR2A = 199; // WT, =(16*10^6)/(2*40000), 40kHz, seems not working on no prescaling
+  OCR1A = 24;//24(40kHz), 30(32kHz), 61(16kHz), 124(8kHz), 249(4kHz) = (16*10^6) / (8000*8) - 1 (must be <256) //WT, =(16*10^6)/(2*4000*8)-1
+  //OCR1A = 199; // WT, =(16*10^6)/(2*40000), 40kHz, seems not working on no prescaling
   // turn on CTC mode
-  TCCR2A |= (1 << WGM21);
+  TCCR1A |= (1 << WGM11);
   // Set CS21 bit for 8 prescaler
-  TCCR2B |= (1 << CS21);
-  //TCCR2B |= (1 << CS20); // no prescaling, seems CS20=1 not work
+  //TCCR1B |= (1 << CS11);
+  TCCR1B |= (1 << CS10); // no prescaling, seems CS20=1 not work
   // enable timer compare interrupt
-  TIMSK2 |= (1 << OCIE2A);
+  TIMSK1 |= (1 << OCIE1A);
 
 
   sei();//allow interrupts
@@ -358,13 +360,11 @@ void setupTimers(void)
 
 
 void setup() {
-  #if !defined(GPS_PROMINI)
-    SerialOpen(0,SERIAL0_COM_SPEED);
-  #endif
+  SerialOpen(0,SERIAL0_COM_SPEED);
   LEDPIN_PINMODE;
   POWERPIN_PINMODE;
   BUZZERPIN_PINMODE;
-  STABLEPIN_PINMODE;
+  STABLEPIN_PINMODE; // This is defined as ";" if MONgGOOSE is not defined
   POWERPIN_OFF;
   initOutput();
   readGlobalSet();
@@ -389,10 +389,14 @@ void setup() {
   debugmsg_append_str("initialization completed\n");
 
   //mwm: adding Davin's sonar hack
+  pinMode(5, INPUT);
   //pinMode(6, INPUT);
   //pinMode(13,OUTPUT);
   //  attachInterrupt(5, sonarTimer, CHANGE);
-  setupTimers();
+  //setupTimers();
+  PCICR  |= (1 << 2);
+  PCMSK2 = (1 << 5);
+  sei();
 }
 
 

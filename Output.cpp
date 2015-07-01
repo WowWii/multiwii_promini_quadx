@@ -67,58 +67,34 @@ void writeServos() {
 void writeMotors() { // [1000;2000] => [125;250]
 	/********  Specific PWM Timers & Registers for the atmega328P (Promini)   ************/
 #if defined(PROMINI)//this is us
-#if (NUMBER_MOTOR > 0)
-#ifndef EXT_MOTOR_RANGE
-	OCR1A = motor[0]>>3; //  pin 9
-#else
-	OCR1A = ((motor[0]>>2) - 250);
-#endif
-#endif
-#if (NUMBER_MOTOR > 1)
-#ifndef EXT_MOTOR_RANGE
-	OCR1B = motor[1]>>3; //  pin 10
-#else
-	OCR1B = ((motor[1]>>2) - 250);
-#endif
-#endif
-#if (NUMBER_MOTOR > 2)
-#ifndef EXT_MOTOR_RANGE
-	OCR2A = motor[2]>>3; //  pin 11
-#else
-	OCR2A = ((motor[2]>>2) - 250);
-#endif
-#endif
-#if (NUMBER_MOTOR > 3)
-#ifndef EXT_MOTOR_RANGE
-	OCR2B = motor[3]>>3; //  pin 3
-#else
-	OCR2B = ((motor[3]>>2) - 250);
-#endif
-#endif
-#if (NUMBER_MOTOR > 4)
-#if (NUMBER_MOTOR == 6) && !defined(SERVO)
-#ifndef EXT_MOTOR_RANGE
-	atomicPWM_PIN6_highState = motor[4]>>3;
-	atomicPWM_PIN5_highState = motor[5]>>3;
-#else
-	atomicPWM_PIN6_highState = (motor[4]>>2) - 250;
-	atomicPWM_PIN5_highState = (motor[5]>>2) - 250;
-#endif
-	atomicPWM_PIN6_lowState = 255-atomicPWM_PIN6_highState;
-	atomicPWM_PIN5_lowState = 255-atomicPWM_PIN5_highState;
-#else //note: EXT_MOTOR_RANGE not possible here
-	atomicPWM_PIN6_highState = ((motor[4]-1000)>>2)+5;
-	atomicPWM_PIN6_lowState = 245-atomicPWM_PIN6_highState;
-	atomicPWM_PIN5_highState = ((motor[5]-1000)>>2)+5;
-	atomicPWM_PIN5_lowState = 245-atomicPWM_PIN5_highState;
-#endif
-#endif
-#if (NUMBER_MOTOR > 6) //note: EXT_MOTOR_RANGE not possible here
-	atomicPWM_PINA2_highState = ((motor[6]-1000)>>2)+5;
-	atomicPWM_PINA2_lowState = 245-atomicPWM_PINA2_highState;
-	atomicPWM_PIN12_highState = ((motor[7]-1000)>>2)+5;
-	atomicPWM_PIN12_lowState = 245-atomicPWM_PIN12_highState;
-#endif
+  #if (NUMBER_MOTOR > 0)
+    #ifndef EXT_MOTOR_RANGE
+    	OCR1A = motor[0]>>3; //  pin 9
+    #else
+    	OCR1A = ((motor[0]>>2) - 250);
+    #endif
+  #endif
+  #if (NUMBER_MOTOR > 1)
+    #ifndef EXT_MOTOR_RANGE
+    	OCR1B = motor[1]>>3; //  pin 10
+    #else
+    	OCR1B = ((motor[1]>>2) - 250);
+    #endif
+  #endif
+  #if (NUMBER_MOTOR > 2)
+    #ifndef EXT_MOTOR_RANGE
+    	OCR2A = motor[2]>>3; //  pin 11
+    #else
+    	OCR2A = ((motor[2]>>2) - 250);
+    #endif
+  #endif
+  #if (NUMBER_MOTOR > 3)
+    #ifndef EXT_MOTOR_RANGE
+    	OCR2B = motor[3]>>3; //  pin 3
+    #else
+    	OCR2B = ((motor[3]>>2) - 250);
+    #endif
+  #endif
 #endif
 }
 
@@ -153,25 +129,18 @@ void initOutput() {
 
 	/********  Specific PWM Timers & Registers for the atmega328P (Promini)   ************/
 #if defined(PROMINI)
-#if (NUMBER_MOTOR > 0)
-	TCCR1A |= _BV(COM1A1); // connect pin 9 to timer 1 channel A
-#endif
-#if (NUMBER_MOTOR > 1)
-	TCCR1A |= _BV(COM1B1); // connect pin 10 to timer 1 channel B
-#endif
-#if (NUMBER_MOTOR > 2)
-	TCCR2A |= _BV(COM2A1); // connect pin 11 to timer 2 channel A
-#endif
-#if (NUMBER_MOTOR > 3)
-	TCCR2A |= _BV(COM2B1); // connect pin 3 to timer 2 channel B
-#endif
-//mwm: #if (NUMBER_MOTOR > 4)  // PIN 5 & 6 or A0 & A1
-	//mwm: initializeSoftPWM();
-//mwm: #if defined(A0_A1_PIN_HEX) || (NUMBER_MOTOR > 6)
-	//mwm: pinMode(5,INPUT);pinMode(6,INPUT); // we reactivate the INPUT affectation for these two PINs
-	//mwm: pinMode(A0,OUTPUT);pinMode(A1,OUTPUT);
-//mwm: #endif
-//mwm: #endif
+  #if (NUMBER_MOTOR > 0)
+  	TCCR1A |= _BV(COM1A1); // connect pin 9 to timer 1 channel A
+  #endif
+  #if (NUMBER_MOTOR > 1)
+  	TCCR1A |= _BV(COM1B1); // connect pin 10 to timer 1 channel B
+  #endif
+  #if (NUMBER_MOTOR > 2)
+  	TCCR2A |= _BV(COM2A1); // connect pin 11 to timer 2 channel A
+  #endif
+  #if (NUMBER_MOTOR > 3)
+  	TCCR2A |= _BV(COM2B1); // connect pin 3 to timer 2 channel B
+  #endif
 #endif
 
 	/********  special version of MultiWii to calibrate all attached ESCs ************/

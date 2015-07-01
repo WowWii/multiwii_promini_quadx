@@ -45,9 +45,6 @@ void rxInt(void);
 void configureReceiver() {
   /******************    Configure each rc pin for PCINT    ***************************/
   #if defined(STANDARD_RX)
-    #if defined(MEGA)
-      DDRK = 0;  // defined PORTK as a digital port ([A8-A15] are consired as digital PINs and not analogical)
-    #endif
     // PCINT activation
     for(uint8_t i = 0; i < PCINT_PIN_COUNT; i++){ // i think a for loop is ok for the init.
       PCINT_RX_PORT |= PCInt_RX_Pins[i];
@@ -65,26 +62,6 @@ void configureReceiver() {
         #if defined(RCAUXPIN12)
           PCMSK0 = (1 << 4);
         #endif
-      #endif
-    #endif
-    
-    /***************   atmega32u4's Specific RX Pin Setup   **********************/
-    #if defined(PROMICRO)
-      //Trottle on pin 7
-      DDRE &= ~(1 << 6); // pin 7 to input
-      PORTE |= (1 << 6); // enable pullups
-      EICRB |= (1 << ISC60);
-      EIMSK |= (1 << INT6); // enable interuppt
-      // Aux2 pin on PBO (D17/RXLED)
-      #if defined(RCAUX2PIND17)
-        DDRB &= ~(1 << 0); // set D17 to input 
-      #endif
-      // Aux2 pin on PD2 (RX0)
-      #if defined(RCAUX2PINRXO)
-        DDRD &= ~(1 << 2); // RX to input
-        PORTD |= (1 << 2); // enable pullups
-        EICRA |= (1 << ISC20);
-        EIMSK |= (1 << INT2); // enable interuppt
       #endif
     #endif
     
